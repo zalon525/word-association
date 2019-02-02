@@ -4,11 +4,23 @@ from pathlib import Path
 
 import pandas as pd
 import networkx as nx
+import matplotlib.pyplot as plt
+
+DATADIR = './data'
+TARGETS = ['dym', 'palenie', 'papieros', 'tytoń']
 
 
 def main():
-    G = create_graph('./data')
-    print(nx.shortest_path(G, target='papieros', weight='weight'))
+    G = create_graph(DATADIR)
+
+    for target in TARGETS:
+        with open('shortests_paths_to_{}'.format(target), mode='w') as file:
+            file.write('Shortest paths to "{}":\n'.format(target))
+            for start, path in nx.shortest_path(G, target=target, weight='weight').items():
+                file.write('from "{}": {}\n'.format(start, path))
+
+    nx.draw(G)
+    plt.show()
 
 
 def create_graph(datadir: str, weight=lambda c: 1 / c, average=lambda x, y: sqrt(x * y)) -> nx.Graph:
